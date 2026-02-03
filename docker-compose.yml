@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  trading_bot:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    # Restart policy to keep it running if it crashes (optional, good for prod)
+    restart: unless-stopped
