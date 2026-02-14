@@ -9,5 +9,9 @@ services:
       - PYTHONUNBUFFERED=1
     env_file:
       - .env
-    # Restart policy to keep it running if it crashes (optional, good for prod)
-    restart: unless-stopped
+      
+    # restart: unless-stopped
+    
+    command: ["bash", "-lc", "sleep infinity"]
+    stdin_open: true   # keeps STDIN open (nice for shells)
+    tty: true          # allocates a TTY (nice for interactive use)

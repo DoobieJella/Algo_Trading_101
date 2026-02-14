@@ -3,6 +3,8 @@ import requests
 import json
 import random
 
+from dataclasses import dataclass
+
 logger = logging.getLogger(__name__)
 
 class KisApi:
@@ -26,10 +28,10 @@ class KisApi:
         """
         Authenticate with KIS API to get Access Token.
         """
-        if self.mode == "MOCK":
-            logger.info("[MOCK] Authentication successful (Simulated)")
-            self.access_token = "MOCK_TOKEN_12345"
-            return True
+        # if self.mode == "MOCK":
+        #     logger.info("[MOCK] Authentication successful (Simulated)")
+        #     self.access_token = "MOCK_TOKEN_12345"
+        #     return True
             
         headers = {"content-type": "application/json"}
         body = {
@@ -39,16 +41,22 @@ class KisApi:
         }
         
         try:
+            logger.info("OAuth POST call in progress...")
             # ENDPOINT: /oauth2/tokenP (Production/Real) typically differs slightly from VTS
             # For simplicity using standard endpoint pattern, but highly dependent on specifically which API (Domestic/Overseas)
             # This is a placeholder for the actual OAUTH call
-            # url = f"{self.base_url}/oauth2/tokenP" 
-            # resp = requests.post(url, headers=headers, data=json.dumps(body))
-            # ... implementation ...
-            logger.warning("[REAL/VTS] Auth not fully implemented yet, returning True for structure check.")
+            url = f"{self.base_url}/oauth2/tokenP" 
+            resp = requests.post(url, headers=headers, data=json.dumps(body))
+            resp.raise_for_status()
+            data = resp.json()
+
+            self.access_token = data["access_token"]
+            logger.info(f"access_token: {self.access_token}")
+            logger.info(f"response: {data}")
+
             return True 
         except Exception as e:
-            logger.error(f"Auth failed: {e}")
+            logger.error(f"Authentication failed, error: {e}")
             return False
 
     def get_current_price(self, code):
