@@ -55,3 +55,7 @@ Thumbs.db
 
 # Jupyter
 .ipynb_checkpoints
+
+# Project Specifics
+KIS/sheets
+*.ipynb

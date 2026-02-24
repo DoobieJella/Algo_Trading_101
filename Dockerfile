@@ -9,11 +9,3 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy source code
-COPY . .
-
-# Set python path to include src
-ENV PYTHONPATH="${PYTHONPATH}:/app/src"
-
-CMD ["python", "src/main.py"]

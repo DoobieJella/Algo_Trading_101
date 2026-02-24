@@ -2,16 +2,17 @@ version: '3.8'
 
 services:
   trading_bot:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trading_bot
     volumes:
-      - .:/app
+      - ./src:/app/src
+      - ./tests:/app/test
     environment:
       - PYTHONUNBUFFERED=1
     env_file:
       - .env
-      
-    # restart: unless-stopped
-    
-    command: ["bash", "-lc", "sleep infinity"]
-    stdin_open: true   # keeps STDIN open (nice for shells)
-    tty: true          # allocates a TTY (nice for interactive use)
+    command: [ "bash", "-lc", "sleep infinity" ]
+    stdin_open: true # keeps STDIN open (nice for shells)
+    tty: true # allocates a TTY (nice for interactive use)
