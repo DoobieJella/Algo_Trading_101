@@ -29,9 +29,10 @@ class ArbitrageStrategy(Strategy):
 
         if spread > self.threshold:
             logger.info("Spread high: Sell A, Buy B")
-            self.execute_sell(f"Spread {spread:.2f}% > {self.threshold}%")
             # Logic to Buy B would go here
+            return self.execute_sell(f"Spread {spread:.2f}% > {self.threshold}%", price_a)
             
         elif spread < -self.threshold:
             logger.info("Spread low: Buy A, Sell B")
-            self.execute_buy(f"Spread {spread:.2f}% < -{self.threshold}%")
+            return self.execute_buy(f"Spread {spread:.2f}% < -{self.threshold}%", price_a)
+        return None

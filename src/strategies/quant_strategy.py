@@ -12,6 +12,7 @@ class QuantStrategy(Strategy):
         self.short_window = short_window
         self.long_window = long_window
         self.prices = []
+        self.last_ma_relation = None
 
     def on_market_data(self, data):
         price = data.get('price')
@@ -31,11 +32,21 @@ class QuantStrategy(Strategy):
         
         logger.debug(f"[{self.name}] SMA{self.short_window}: {short_ma}, SMA{self.long_window}: {long_ma}")
 
-        # Basic Crossover Logic
-        # Note: In a real system, you'd check if it JUST crossed over this tick to avoid repeated signals
+        relation = 0
         if short_ma > long_ma:
-             # Example condition: simple signal if short MA is above long MA
-             # In production, use state to trigger only on the crossover moment
-             pass 
+            relation = 1
         elif short_ma < long_ma:
-             pass
+            relation = -1
+
+        if self.last_ma_relation is None:
+            self.last_ma_relation = relation
+            return None
+
+        previous_relation = self.last_ma_relation
+        self.last_ma_relation = relation
+
+        if relation > 0 and previous_relation <= 0:
+            return self.execute_buy("SMA crossover", price)
+        if relation < 0 and previous_relation >= 0:
+            return self.execute_sell("SMA crossover", price)
+        return None

@@ -26,9 +26,12 @@ class FundamentalStrategy(Strategy):
 
         if current_per < self.max_per:
             logger.info(f"Undervalued (PER {current_per} < {self.max_per}). signals BUY.")
-            self.execute_buy("Fundamental Undervalued")
+            signal = self.execute_buy("Fundamental Undervalued", data.get('price'))
+            self.checked_today = True
+            return signal
         
         self.checked_today = True
+        return None
 
     def _get_fake_per(self):
         # Simulate a PER lookup

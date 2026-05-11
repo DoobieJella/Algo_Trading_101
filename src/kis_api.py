@@ -1,9 +1,6 @@
 import logging
 import requests
 import json
-import random
-
-from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +25,10 @@ class KisApi:
         """
         Authenticate with KIS API to get Access Token.
         """
-        # if self.mode == "MOCK":
-        #     logger.info("[MOCK] Authentication successful (Simulated)")
-        #     self.access_token = "MOCK_TOKEN_12345"
-        #     return True
+        if self.mode == "MOCK":
+            logger.info("[MOCK] Authentication successful (simulated)")
+            self.access_token = "MOCK_TOKEN"
+            return True
             
         headers = {"content-type": "application/json"}
         body = {
@@ -46,13 +43,12 @@ class KisApi:
             # For simplicity using standard endpoint pattern, but highly dependent on specifically which API (Domestic/Overseas)
             # This is a placeholder for the actual OAUTH call
             url = f"{self.base_url}/oauth2/tokenP" 
-            resp = requests.post(url, headers=headers, data=json.dumps(body))
+            resp = requests.post(url, headers=headers, data=json.dumps(body), timeout=10)
             resp.raise_for_status()
             data = resp.json()
 
             self.access_token = data["access_token"]
-            logger.info(f"access_token: {self.access_token}")
-            logger.info(f"response: {data}")
+            logger.info("KIS authentication successful")
 
             return True 
         except Exception as e:
@@ -64,18 +60,16 @@ class KisApi:
         Get current price of a stock (Mock or Real).
         """
         if self.mode == "MOCK":
-            # Simulate random price movement around 70,000 KRW
-            simulated_price = 70000 + random.randint(-500, 500)
-            return simulated_price
+            return 70000
 
         # Implementation for Real/VTS API would go here
         # headers = { ... }
         # url = ...
         return None
 
-    def place_order(self, code, qty, price, type="BUY"):
+    def place_order(self, code, qty, price, side="BUY"):
         """
         Place an order.
         """
-        logger.info(f"[{self.mode}] Placing {type} Order: {code} x {qty} @ {price}")
+        logger.info(f"[{self.mode}] Placing {side} Order: {code} x {qty} @ {price}")
         return True

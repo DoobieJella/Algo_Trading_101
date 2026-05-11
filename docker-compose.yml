@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   trading_bot:
     build:
@@ -8,11 +6,12 @@ services:
     container_name: trading_bot
     volumes:
       - ./src:/app/src
-      - ./tests:/app/test
+      - ./tests:/app/tests
     environment:
       - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app/src
     env_file:
       - .env
-    command: [ "bash", "-lc", "sleep infinity" ]
+    command: [ "python", "src/main.py" ]
     stdin_open: true # keeps STDIN open (nice for shells)
     tty: true # allocates a TTY (nice for interactive use)

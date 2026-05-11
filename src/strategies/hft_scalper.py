@@ -1,6 +1,5 @@
 from strategy import Strategy
 import logging
-import random
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +23,16 @@ class HFTStrategy(Strategy):
             # If price dropped by tick_size, Buy (expect rebound)
             if current_price <= self.last_price - self.tick_size:
                 logger.info(f"[{self.name}] Price Drop Detected. Scalp Buy.")
-                self.execute_buy("Dip Scalp")
+                signal = self.execute_buy("Dip Scalp", current_price)
+                self.last_price = current_price
+                return signal
             
             # If price rose by tick_size, Sell
             elif current_price >= self.last_price + self.tick_size:
                 logger.info(f"[{self.name}] Price Jump Detected. Scalp Sell.")
-                self.execute_sell("Peak Scalp")
+                signal = self.execute_sell("Peak Scalp", current_price)
+                self.last_price = current_price
+                return signal
 
         self.last_price = current_price
+        return None
