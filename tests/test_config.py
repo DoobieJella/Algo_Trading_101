@@ -7,6 +7,17 @@ class TestAppConfig(unittest.TestCase):
     def test_mock_mode_does_not_require_kis_credentials(self):
         AppConfig(trading_mode="MOCK").validate()
 
+    def test_invalid_kis_api_env_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "KIS_API_ENV"):
+            AppConfig(kis_api_env="paper").validate()
+
+    def test_mock_kis_data_access_does_not_require_credentials(self):
+        AppConfig(kis_api_env="MOCK").validate_kis_data_access()
+
+    def test_virtual_kis_data_access_requires_credentials(self):
+        with self.assertRaisesRegex(ValueError, "VIRTUAL KIS data access"):
+            AppConfig(kis_api_env="VIRTUAL").validate_kis_data_access()
+
     def test_real_mode_requires_kis_credentials(self):
         with self.assertRaisesRegex(ValueError, "KIS_APP_KEY"):
             AppConfig(trading_mode="REAL").validate()

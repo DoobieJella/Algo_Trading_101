@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 
 VALID_TRADING_MODES = {"MOCK", "REAL"}
+VALID_KIS_API_ENVS = {"MOCK", "VIRTUAL", "REAL"}
 PLACEHOLDER_VALUES = {
     "your_app_key_here",
     "your_app_secret_here",
@@ -16,6 +17,7 @@ PLACEHOLDER_VALUES = {
 @dataclass(frozen=True)
 class AppConfig:
     trading_mode: str = "MOCK"
+    kis_api_env: str = "VIRTUAL"
     kis_app_key: str = ""
     kis_app_secret: str = ""
     kis_account_no: str = ""
@@ -24,12 +26,14 @@ class AppConfig:
 
     def __post_init__(self):
         object.__setattr__(self, "trading_mode", self.trading_mode.upper())
+        object.__setattr__(self, "kis_api_env", self.kis_api_env.upper())
 
     @classmethod
     def from_env(cls):
         load_dotenv()
         return cls(
             trading_mode=os.getenv("TRADING_MODE", "MOCK"),
+            kis_api_env=os.getenv("KIS_API_ENV", "VIRTUAL"),
             kis_app_key=os.getenv("KIS_APP_KEY", ""),
             kis_app_secret=os.getenv("KIS_APP_SECRET", ""),
             kis_account_no=os.getenv("KIS_ACCOUNT_NO", ""),
@@ -40,10 +44,23 @@ class AppConfig:
     def validate(self):
         if self.trading_mode not in VALID_TRADING_MODES:
             raise ValueError(f"Unsupported TRADING_MODE: {self.trading_mode}")
+        if self.kis_api_env not in VALID_KIS_API_ENVS:
+            raise ValueError(f"Unsupported KIS_API_ENV: {self.kis_api_env}")
 
         if self.trading_mode == "MOCK":
             return
 
+        self._validate_kis_credentials("REAL mode")
+
+    def validate_kis_data_access(self):
+        if self.kis_api_env not in VALID_KIS_API_ENVS:
+            raise ValueError(f"Unsupported KIS_API_ENV: {self.kis_api_env}")
+        if self.kis_api_env == "MOCK":
+            return
+
+        self._validate_kis_credentials(f"{self.kis_api_env} KIS data access")
+
+    def _validate_kis_credentials(self, context):
         missing = [
             name
             for name, value in {
@@ -56,4 +73,4 @@ class AppConfig:
             if not value.strip() or value.strip() in PLACEHOLDER_VALUES
         ]
         if missing:
-            raise ValueError(f"Missing required REAL mode settings: {', '.join(missing)}")
+            raise ValueError(f"Missing required {context} settings: {', '.join(missing)}")

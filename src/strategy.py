@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
 import logging
 
+from models import Signal
+
 logger = logging.getLogger(__name__)
 
 class Strategy(ABC):
-    def __init__(self, api, symbol):
-        self.api = api
+    def __init__(self, broker, symbol):
+        self.broker = broker
+        self.api = broker
         self.symbol = symbol
         self.name = self.__class__.__name__
 
@@ -17,18 +20,10 @@ class Strategy(ABC):
         """
         pass
 
-    def execute_buy(self, context=""):
+    def execute_buy(self, context="", price=None):
         logger.info(f"[{self.name}] BUY Signal for {self.symbol} ({context})")
-        # Logic to calculate quantity based on balance (simplified)
-        qty = 1 
-        price = self.api.get_current_price(self.symbol)
-        if price:
-            self.api.place_order(self.symbol, qty, price, "BUY")
+        return Signal(self.symbol, "BUY", quantity=1, price=price, reason=context)
 
-    def execute_sell(self, context=""):
+    def execute_sell(self, context="", price=None):
         logger.info(f"[{self.name}] SELL Signal for {self.symbol} ({context})")
-        # Logic to calculate quantity to sell
-        qty = 1
-        price = self.api.get_current_price(self.symbol)
-        if price:
-            self.api.place_order(self.symbol, qty, price, "SELL")
+        return Signal(self.symbol, "SELL", quantity=1, price=price, reason=context)

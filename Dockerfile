@@ -14,5 +14,6 @@ ENV PYTHONPATH=/app/src
 
 COPY src ./src
 COPY tests ./tests
+COPY KIS ./KIS
 
 CMD ["python", "src/main.py"]

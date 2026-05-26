@@ -59,3 +59,11 @@ Thumbs.db
 # Project Specifics
 KIS/sheets
 *.ipynb
+docs/*
+!docs/code_review.md
+!docs/ppo_order_execution_research.md
+.venv/*
+data/
+reports/
+models/
+AGENTS.md

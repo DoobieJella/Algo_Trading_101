@@ -7,11 +7,35 @@ services:
     volumes:
       - ./src:/app/src
       - ./tests:/app/tests
+      - ./KIS:/app/KIS
+      - ./reports:/app/reports
+      - ./data:/app/data
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/app/src
     env_file:
       - .env
-    command: [ "python", "src/main.py" ]
+    command: [ "tail", "-f", "/dev/null" ]
     stdin_open: true # keeps STDIN open (nice for shells)
     tty: true # allocates a TTY (nice for interactive use)
+
+  rl_trainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rl_trainer
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./KIS:/app/KIS
+      - ./reports:/app/reports
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app/src
+    env_file:
+      - .env
+    command: [ "tail", "-f", "/dev/null" ]
+    stdin_open: true
+    tty: true
